@@ -1,0 +1,163 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2563eb" />
+  <title>{% block title %}Tickio{% endblock %}</title>
+
+  <!-- Bootstrap (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- CSS embebido (paleta, layout y componentes) -->
+  <style>
+    :root{
+      --bg:#0b0f19;          /* fondo oscuro elegante */
+      --panel:#111827;       /* tarjetas/menús */
+      --text:#e5e7eb;        /* texto principal */
+      --muted:#9ca3af;       /* texto secundario */
+      --primary:#2563eb;     /* azul botón/links */
+      --primary-600:#1d4ed8; /* hover */
+      --border:#1f2937;
+      --radius:14px;
+    }
+    html,body{height:100%}
+    body{
+      background:linear-gradient(180deg, #0b0f19 0%, #0f172a 100%);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Ubuntu,Cantarell,"Helvetica Neue",Arial,sans-serif;
+    }
+
+    /* NAV */
+    .nav-wrap{
+      position:sticky; top:0; z-index:1020;
+      backdrop-filter: blur(6px);
+      background: rgba(11,15,25,.6);
+      border-bottom:1px solid var(--border);
+    }
+    .navbar-brand{
+      font-weight:700; letter-spacing:.3px;
+    }
+    .nav-link{ color:var(--muted) }
+    .nav-link:hover, .nav-link:focus{ color:#fff }
+    .btn-primary{
+      background:var(--primary); border-color:var(--primary);
+      border-radius:12px; font-weight:600;
+    }
+    .btn-primary:hover{ background:var(--primary-600); border-color:var(--primary-600) }
+
+    /* CONTENIDO */
+    main{ padding: 24px 0 40px }
+    .container-narrow{ max-width: 1100px }
+
+    /* TARJETAS / PANELES */
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+    }
+
+    /* MENSAJES */
+    .alert{ border-radius:12px; }
+    .alert a{ color:#fff; text-decoration: underline; }
+
+    /* FOOTER */
+    footer{
+      border-top:1px solid var(--border);
+      color:var(--muted);
+      padding:22px 0; font-size:.95rem;
+    }
+
+    /* UTILIDADES */
+    .muted{ color:var(--muted) }
+    .badge-soft{
+      background:rgba(37,99,235,.15);
+      color:#cbd5e1; border:1px solid rgba(37,99,235,.2);
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="nav-wrap">
+    <nav class="navbar navbar-expand-lg container container-narrow">
+      <a class="navbar-brand text-white" href="{% url 'events:home' %}">Tickio</a>
+
+      <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#topnav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="topnav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="{% url 'events:list' %}">Eventos</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+
+          {% if user.is_authenticated and user.role == "ORGANIZER" %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'dashboard:index' %}">Dashboard</a></li>
+          {% endif %}
+        </ul>
+
+        <!-- Buscador rápido → va a /events/ con GET -->
+        <form class="d-flex me-3" role="search" method="get" action="{% url 'events:list' %}">
+          <input class="form-control form-control-sm me-2" type="search" name="q" placeholder="Buscar eventos…">
+        </form>
+
+        <ul class="navbar-nav mb-2 mb-lg-0">
+          <li class="nav-item me-2">
+            <a class="btn btn-sm btn-primary" href="{% url 'orders:cart' %}">
+              Carrito <span class="badge text-bg-dark badge-soft ms-1">
+                {{ request.session.cart|default:{}|length }}
+              </span>
+            </a>
+          </li>
+
+          {% if user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'orders:mine' %}">Mis órdenes</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'accounts:logout' %}">Salir</a></li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Entrar</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'accounts:signup' %}">Crear cuenta</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <!-- MENSAJES (django.contrib.messages) -->
+  <div class="container container-narrow mt-3">
+    {% if messages %}
+      {% for message in messages %}
+        {% comment %} mapear 'error'→'danger' {% endcomment %}
+        {% if message.tags == 'error' %}
+          {% with 'danger' as level %}{% endwith %}
+        {% endif %}
+        <div class="alert alert-{{ message.tags|default:'info' }} panel" role="alert">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+
+  <!-- CONTENIDO -->
+  <main class="container container-narrow">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container container-narrow d-flex flex-wrap justify-content-between align-items-center">
+      <span>© {{ now|date:"Y" }} Tickio — Todos los derechos reservados.</span>
+      <span class="muted">Hecho con Django • Bootstrap</span>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
