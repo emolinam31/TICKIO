@@ -85,7 +85,7 @@
   <!-- NAVBAR -->
   <div class="nav-wrap">
     <nav class="navbar navbar-expand-lg container container-narrow">
-      <a class="navbar-brand text-white" href="{% url 'events:home' %}">Tickio</a>
+    <a class="navbar-brand text-white" href="{% url 'home' %}">Tickio</a>
 
       <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#topnav">
         <span class="navbar-toggler-icon"></span>
@@ -110,7 +110,7 @@
           <li class="nav-item me-2">
             <a class="btn btn-sm btn-primary" href="{% url 'orders:cart' %}">
               Carrito <span class="badge text-bg-dark badge-soft ms-1">
-                {{ request.session.cart|default:{}|length }}
+                {{ request.session.cart|default:"{}"|length }}
               </span>
             </a>
           </li>
