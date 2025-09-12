@@ -1,10 +1,7 @@
 from django.urls import path
-from .views import HomeView, EventListView, EventDetailView
-
-app_name = "events"
+from . import views
 
 urlpatterns = [
-    path("", HomeView.as_view(), name="home"),            # Home tipo e-commerce
-    path("events/", EventListView.as_view(), name="list"),# Explorador/listado
-    path("events/<slug:slug>/", EventDetailView.as_view(), name="detail"),
+    path("", views.HomeView.as_view(), name = "home"),
+    path("events/", views.EventListView.as_view(), name = "events"),
 ]
