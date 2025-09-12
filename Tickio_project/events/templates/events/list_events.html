@@ -5,6 +5,29 @@
 {% block content %}
 <div class="container py-5">
     <h1 class="mb-4">Eventos Disponibles</h1>
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" 
+                            name="nombre" 
+                            class="form-control" 
+                            placeholder="Buscar eventos por nombre..."
+                            value="{{ request.GET.nombre|default:'' }}">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Buscar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div class="card mb-4">
         <div class="card-body">
@@ -36,7 +59,8 @@
                 <div class="col-md-4">
                     <label class="form-label">Fecha</label>
                     <input type="date" name="fecha" class="form-control" 
-                           value="{{ request.GET.fecha|default:'' }}">
+                           value="{{ request.GET.fecha|default:'' }}"
+                           >
                 </div>
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary">
@@ -52,7 +76,10 @@
 
     <div class="alert alert-info mb-4">
         {% if request.GET %}
-            Mostrando resultados filtrados ({{ page_obj.paginator.count }} eventos encontrados)
+            {% if request.GET.nombre %}
+                Mostrando resultados para "{{ request.GET.nombre }}" 
+            {% endif %}
+            ({{ page_obj.paginator.count }} eventos encontrados)
         {% else %}
             Mostrando todos los eventos ({{ page_obj.paginator.count }} en total)
         {% endif %}
@@ -83,7 +110,7 @@
                     </div>
                 </div>
                 <div class="card-footer bg-transparent border-top-0">
-                    <a href="#" class="btn btn-primary w-100">
+                    <a href="{% url 'detail_events' evento.id %}" class="btn btn-primary w-100">
                         <i class="fas fa-ticket-alt me-2"></i>Ver Detalles
                     </a>
                 </div>
