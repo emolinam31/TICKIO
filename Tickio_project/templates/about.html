@@ -1,117 +1,99 @@
-{% extends "base.html" %}
-{% block title %}Acerca de Tickio{% endblock %}
+{% extends 'base.html' %}
+
+{% block title %}Sobre Nosotros - Tickio{% endblock %}
 
 {% block content %}
-<style>
-  .about-hero{padding:2.5rem 0}
-  .about-hero h1{font-size:2.1rem;margin:0 0 .5rem}
-  .about-hero p.lead{color:#cbd5e1;max-width:880px}
-  .pill{display:inline-block;padding:.2rem .6rem;border-radius:999px;background:#111827;border:1px solid #1f2937;color:#9ca3af;font-size:.85rem}
-  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:1rem}
-  .col-6{grid-column:span 6}
-  .col-4{grid-column:span 4}
-  .col-12{grid-column:span 12}
-  @media (max-width:992px){.col-6,.col-4{grid-column:span 12}}
-  .card-ghost{background:#111827;border:1px solid #1f2937;border-radius:14px;padding:1.1rem}
-  .card-ghost h3{margin:.25rem 0 .4rem;font-size:1.1rem}
-  .icon{font-size:1.25rem;margin-right:.35rem}
-  .values li{margin:.35rem 0}
-  .cta .btn{min-width:180px}
-</style>
-
-<section class="about-hero container container-narrow">
-  <span class="pill">Acerca de Tickio</span>
-  <h1>Conectamos personas con experiencias en vivo — fácil, rápido y sin enredos.</h1>
-  <p class="lead">
-    Tickio es una plataforma web para <strong>explorar, reservar y comprar</strong> boletos de eventos de forma
-    segura desde cualquier dispositivo. Queremos que asistir a un concierto, una obra o una charla sea tan simple como:
-    <em>elegir, reservar y disfrutar</em>.
-  </p>
-  <div class="cta d-flex gap-2 mt-3">
-    <a class="btn btn-primary" href="{% url 'events:list' %}">Explorar eventos</a>
-    <a class="btn btn-outline-light" href="{% url 'accounts:signup' %}">Publicar un evento</a>
-  </div>
-</section>
-
-<section class="container container-narrow mt-2">
-  <div class="grid">
-    <div class="col-6">
-      <div class="card-ghost">
-        <h3>La motivación</h3>
-        <p class="text-secondary">
-          Muchas veces nos enteramos tarde de un evento o el proceso de compra es confuso.
-          Tickio nace para eliminar esas fricciones: <strong>descubres a tiempo</strong>, comparas opciones y
-          compras <strong>en pocos pasos</strong>, con tus entradas listas en el teléfono.
-        </p>
-      </div>
-    </div>
-    <div class="col-6">
-      <div class="card-ghost">
-        <h3>Nuestra misión</h3>
-        <p class="text-secondary">
-          Desarrollar una app <strong>intuitiva, moderna y eficiente</strong> que mejore la experiencia de
-          gestión y asistencia a eventos, conectando a asistentes y organizadores en una red de eventos viva.
-        </p>
-      </div>
-    </div>
-
-    <div class="col-6">
-      <div class="card-ghost">
-        <h3>Para asistentes</h3>
-        <ul class="text-secondary mb-0">
-          <li><span class="icon">🔎</span>Explora por <strong>categoría</strong>, <strong>ciudad</strong> y <strong>fecha</strong>.</li>
-          <li><span class="icon">🛒</span>Agrega entradas al carrito y compra con un flujo claro.</li>
-          <li><span class="icon">🎟️</span>Recibe tus <strong>tickets con código/QR</strong> y consulta “Mis órdenes”.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="col-6">
-      <div class="card-ghost">
-        <h3>Para organizadores</h3>
-        <ul class="text-secondary mb-0">
-          <li><span class="icon">📣</span>Publica y edita eventos, define tipos de boleto y capacidad.</li>
-          <li><span class="icon">📊</span>Panel con <strong>ventas</strong>, <strong>boletos vendidos</strong> y <strong>% de ocupación</strong>.</li>
-          <li><span class="icon">🧭</span>Controla la visibilidad del evento (activar/pausar) cuando lo necesites.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="col-12">
-      <div class="card-ghost">
-        <h3>¿Cómo funciona?</h3>
-        <div class="grid">
-          <div class="col-4"><p class="text-secondary"><span class="icon">1️⃣</span><strong>Explora</strong> los eventos que te interesan.</p></div>
-          <div class="col-4"><p class="text-secondary"><span class="icon">2️⃣</span><strong>Elige</strong> tus entradas y confirma la compra.</p></div>
-          <div class="col-4"><p class="text-secondary"><span class="icon">3️⃣</span><strong>Disfruta</strong> con tu ticket QR listo en el celular.</p></div>
+<div class="container">
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">Sobre Tickio</h1>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <p class="lead text-muted">
+                    Conectamos a las personas con los eventos que realmente quieren vivir
+                </p>
+            </div>
         </div>
-      </div>
     </div>
 
-    <div class="col-12">
-      <div class="card-ghost">
-        <h3>Nuestros valores</h3>
-        <ul class="values text-secondary mb-0">
-          <li><strong>Simple</strong>: decisiones claras, pasos cortos y sin rodeos.</li>
-          <li><strong>Seguro</strong>: sesiones protegidas, CSRF y control de roles.</li>
-          <li><strong>Transparente</strong>: disponibilidad real y mensajes claros (sin sobreventa).</li>
-          <li><strong>Confiable</strong>: arquitectura con buenas prácticas para crecer sin romper.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="col-12">
-      <div class="card-ghost">
-        <h3>El equipo</h3>
-        <p class="text-secondary mb-1">
-          Somos <strong>Esteban</strong>, <strong>Santiago</strong> y <strong>Felipe</strong>, estudiantes de Ingeniería de Sistemas.
-          Construimos Tickio como proyecto de Arquitectura de Software aplicando buenas prácticas y foco en la experiencia de usuario.
-        </p>
-        <div class="d-flex gap-2">
-          <a class="btn btn-primary" href="{% url 'events:list' %}">Ver eventos</a>
-          <a class="btn btn-outline-light" href="{% url 'accounts:signup' %}">Ser organizador</a>
+    <!-- Elevator Pitch Section -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">¿Por qué Tickio?</h2>
+                    <p class="card-text">
+                        ¿Alguna vez has querido asistir a un evento y te diste cuenta demasiado tarde, o
+                        tuviste problemas para comprar tu entrada? Eso es justo lo que queremos evitar.
+                    </p>
+                    <p class="card-text">
+                        Nuestra aplicación web está diseñada para que reservar eventos y comprar boletos
+                        sea un proceso fácil, rápido y sin complicaciones. Desde cualquier dispositivo, los
+                        usuarios pueden explorar eventos disponibles en su ciudad, filtrar por categoría o
+                        fecha, y asegurar su lugar en solo unos pocos pasos. Todo en una plataforma intuitiva
+                        y segura.
+                    </p>
+                    <p class="card-text">
+                        Además, si eres organizador, podrás publicar tus eventos, gestionar asistentes y ver
+                        estadísticas de ventas en tiempo real, todo desde un panel de administración claro y
+                        sencillo de usar.
+                    </p>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-</section>
+
+    <!-- Objetivo Section -->
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm bg-light">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Nuestro Objetivo</h2>
+                    <p class="card-text">
+                        Desarrollar una aplicación web intuitiva, moderna y eficiente que permita a los
+                        usuarios explorar, reservar y adquirir boletos para eventos de manera rápida y
+                        segura, mejorando significativamente la experiencia de gestión y asistencia a
+                        eventos tanto para asistentes como para organizadores. A su vez siendo una red
+                        de eventos e integración de estos para mayor facilidad e interés de los usuarios.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Section -->
+    <h2 class="text-center mb-4">Nuestro Equipo</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+        <!-- Esteban Molina -->
+        <div class="col">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-user-circle fa-4x mb-3 text-primary"></i>
+                    <h5 class="card-title">Esteban Molina</h5>
+                    <p class="card-text text-muted">Desarrollador Full-Stack</p>
+                </div>
+            </div>
+        </div>
+        <!-- Felipe Castro -->
+        <div class="col">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-user-circle fa-4x mb-3 text-primary"></i>
+                    <h5 class="card-title">Felipe Castro</h5>
+                    <p class="card-text text-muted">Desarrollador Full-Stack</p>
+                </div>
+            </div>
+        </div>
+        <!-- Santiago Ramirez -->
+        <div class="col">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <i class="fas fa-user-circle fa-4x mb-3 text-primary"></i>
+                    <h5 class="card-title">Santiago Ramirez</h5>
+                    <p class="card-text text-muted">Desarrollador Full-Stack</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
