@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, DetailView
 from .models import Evento, CategoriaEvento
 
 class HomeView(TemplateView):
@@ -16,10 +16,13 @@ class EventListView(ListView):
         queryset = super().get_queryset()
         
         # Get filter parameters from URL
-        categoria = self.request.GET.get('categoria')
-        lugar = self.request.GET.get('lugar')
-        fecha = self.request.GET.get('fecha')
-
+        nombre = self.request.GET.get("nombre")
+        categoria = self.request.GET.get("categoria")
+        lugar = self.request.GET.get("lugar")
+        fecha = self.request.GET.get("fecha")
+        
+        if nombre:
+            queryset = queryset.filter(nombre__icontains=nombre)
         if categoria:
             queryset = queryset.filter(categoria__nombre=categoria)
         if lugar:
@@ -36,3 +39,8 @@ class EventListView(ListView):
         
         context['lugares'] = Evento.objects.values_list('lugar', flat=True).distinct()
         return context
+    
+class EventDetailView(DetailView):
+    model = Evento
+    template_name = "events/detail_events.html"
+    context_object_name = "evento"
