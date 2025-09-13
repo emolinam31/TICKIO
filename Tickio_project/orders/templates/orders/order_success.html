@@ -1,0 +1,7 @@
+<h1>¡Compra exitosa! 🎉</h1>
+
+<p>Gracias por tu compra.</p>
+<p><strong>Número de orden:</strong> {{ order.id }}</p>
+<p><strong>Total pagado:</strong> {{ order.total }}</p>
+
+<a href="{% url 'orders:cart_view' %}">Volver al carrito</a>

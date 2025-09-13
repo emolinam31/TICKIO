@@ -1,5 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from events.models import TicketType
+from .services import checkout, NotEnoughTickets
+from payments.adapters.dummy import DummyPaymentGateway
+from .models import Order
+
 
 def add_to_cart(request, ticket_type_id):
     cart = request.session.get('cart', {})
@@ -41,3 +46,26 @@ def cart_view(request):
         })
 
     return render(request, "orders/cart.html", {"items": items, "total": total})
+
+
+def checkout_view(request):
+    cart = request.session.get('cart', {})
+    order = None
+    error = None
+
+    if request.method == "POST":
+        try:
+            gateway = DummyPaymentGateway()
+            order = checkout(cart, gateway)
+            if order.status == "paid":
+                request.session['cart'] = {}  # vaciar carrito al pagar
+                return redirect("orders:order_success", order_id=order.id)
+        except NotEnoughTickets as e:
+            error = str(e)
+
+    return render(request, "orders/checkout.html", {"cart": cart, "order": order, "error": error})
+
+
+def order_success(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, "orders/order_success.html", {"order": order})

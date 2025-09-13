@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout</title>
+</head>
+<body>
+    <h1>Checkout</h1>
+
+    {% if error %}
+        <div style="color: red; font-weight: bold;">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if order %}
+        <p>Orden #{{ order.id }} creada con estado: {{ order.status }}</p>
+        <p>Total: {{ order.total }}</p>
+        <a href="{% url 'orders:cart_view' %}">Volver al carrito</a>
+    {% else %}
+        <p>¿Confirmar compra?</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Pagar ahora</button>
+        </form>
+    {% endif %}
+</body>
+</html>
