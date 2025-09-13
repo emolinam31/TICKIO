@@ -1,25 +1,45 @@
-
-from decimal import Decimal
 from django.db import models
-from django.urls import reverse
 
-class Event(models.Model):
-    title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
-    description = models.TextField(blank=True)
-    start = models.DateTimeField(null=True, blank=True)
-    end = models.DateTimeField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+class CategoriaEvento(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+
+    class Meta:
+        verbose_name = "Categoría de Evento"
+        verbose_name_plural = "Categorías de Eventos"
 
     def __str__(self):
-        return self.title
+        return self.nombre
 
-    def get_absolute_url(self):
-        return reverse('events:detail', kwargs={'slug': self.slug})
+class Evento(models.Model):
+    nombre = models.CharField(max_length=200)
+    categoria = models.ForeignKey(
+        CategoriaEvento, 
+        on_delete=models.PROTECT,
+        related_name='eventos'
+    )
+    fecha = models.DateField()
+    lugar = models.CharField(max_length=200)
+    organizador = models.CharField(max_length=100, default="Sin Organizador")
+    cupos_disponibles = models.PositiveIntegerField()
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = "Evento"
+        verbose_name_plural = "Eventos"
+        ordering = ['-fecha', 'nombre']
+
+    def __str__(self):
+        return f"{self.nombre} - {self.fecha}"
+
+    def esta_agotado(self):
+        return self.cupos_disponibles <= 0
+
+# Modelo TicketType para compatibilidad con la app orders
 class TicketType(models.Model):
-    event = models.ForeignKey(Event, related_name='ticket_types', on_delete=models.CASCADE)
+    event = models.ForeignKey(Evento, related_name='ticket_types', on_delete=models.CASCADE)
     name = models.CharField(max_length=120)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     capacity = models.PositiveIntegerField()

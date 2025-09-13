@@ -1,7 +1,28 @@
-<h1>¡Compra exitosa! 🎉</h1>
 
-<p>Gracias por tu compra.</p>
-<p><strong>Número de orden:</strong> {{ order.id }}</p>
-<p><strong>Total pagado:</strong> {{ order.total }}</p>
+{% extends 'base.html' %}
 
-<a href="{% url 'orders:cart_view' %}">Volver al carrito</a>
+{% block title %}Compra exitosa - Tickio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<div class="card shadow-lg border-success">
+				<div class="card-header bg-success text-white text-center">
+					<h1 class="mb-0">¡Compra exitosa! <span>🎉</span></h1>
+				</div>
+				<div class="card-body text-center">
+					<p class="fs-4 mb-3">Gracias por tu compra.</p>
+					<p class="mb-2"><strong>Número de orden:</strong> <span class="text-primary">{{ order.id }}</span></p>
+					<p class="mb-4"><strong>Total pagado:</strong> <span class="text-success">${{ order.total }}</span></p>
+					<div class="d-flex justify-content-center gap-3">
+						<a href="/" class="btn btn-primary btn-lg">Ir al inicio</a>
+						<a href="{% url 'orders:order_detail' order.id %}" class="btn btn-outline-info btn-lg">Ver compra</a>
+						<a href="{% url 'events' %}" class="btn btn-secondary btn-lg">Ver eventos</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

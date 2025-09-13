@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detalle de compra</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-info text-white text-center">
+                        <h2 class="mb-0">Detalle de tu compra</h2>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Número de orden:</strong> {{ order.id }}</p>
+                        <p><strong>Fecha:</strong> {{ order.created_at }}</p>
+                        <p><strong>Total pagado:</strong> <span class="text-success">${{ order.total }}</span></p>
+                        <hr>
+                        <h4 class="mb-3">Boletas compradas</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th>Concierto</th>
+                                        <th>Tipo de boleta</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio unitario</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in order.items.all %}
+                                    <tr>
+                                        <td>{{ item.ticket_type.event.nombre }}</td>
+                                        <td>{{ item.ticket_type.name }}</td>
+                                        <td class="fw-bold">{{ item.quantity }}</td>
+                                        <td>${{ item.price }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" class="text-end fw-bold">Total pagado:</td>
+                                        <td class="text-success fw-bold">${{ order.total }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-end mt-4">
+                            <a href="{% url 'events' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Volver a Eventos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

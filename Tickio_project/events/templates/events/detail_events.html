@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ evento.nombre }} - Tickio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'events' %}">Eventos</a></li>
+            <li class="breadcrumb-item active">{{ evento.nombre }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Event Details Card -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <span class="badge bg-primary mb-2">{{ evento.categoria.nombre }}</span>
+                    <h1 class="card-title">{{ evento.nombre }}</h1>
+                    <div class="my-4">
+                        <p class="card-text">
+                            <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                            <strong>Lugar:</strong> {{ evento.lugar }}
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-calendar text-muted me-2"></i>
+                            <strong>Fecha:</strong> {{ evento.fecha }}
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-user text-muted me-2"></i>
+                            <strong>Organizador:</strong> {{ evento.organizador }}
+                        </p>
+                        <p class="card-text mb-2">
+                            <i class="fas fa-users text-muted me-2"></i>
+                            <strong>Cupos disponibles por tipo de boleta:</strong>
+                            {% for ticket_type in evento.ticket_types.all %}
+                                <span class="badge {% if ticket_type.remaining > 0 %}bg-success{% else %}bg-danger{% endif %} ms-2">
+                                    <strong>{{ ticket_type.name }}:</strong>
+                                    {% if ticket_type.remaining > 0 %}
+                                        {{ ticket_type.remaining }} disponibles
+                                    {% else %}
+                                        Agotado
+                                    {% endif %}
+                                </span>
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservation Card -->
+        <div class="col-lg-4 d-flex flex-column align-items-center">
+            <div class="card shadow-sm w-100" style="max-width: 400px;">
+                <div class="card-body">
+                    <h4 class="card-title">Reservar Entrada</h4>
+                    <div class="mb-4">
+                        <h2 class="text-primary">${{ evento.precio }}</h2>
+                        <small class="text-muted">Precio por entrada</small>
+                    </div>
+                    {% if evento.cupos_disponibles > 0 %}
+                        {% for ticket_type in evento.ticket_types.all %}
+                            <form method="post" action="{% url 'orders:add_to_cart' ticket_type.id %}" class="mb-3">
+                                {% csrf_token %}
+                                <div class="d-flex align-items-center gap-2">
+                                    <label for="quantity-{{ ticket_type.id }}" class="form-label mb-0"><strong>Cantidad:</strong></label>
+                                    <input type="number" name="quantity" id="quantity-{{ ticket_type.id }}" min="1" max="{{ ticket_type.remaining }}" value="1" class="form-control rounded-pill" style="width: 90px;" required>
+                                    <button type="submit" class="btn btn-primary rounded-pill px-4">
+                                        <i class="fas fa-ticket-alt me-2"></i>Comprar ({{ ticket_type.name }})
+                                    </button>
+                                </div>
+                            </form>
+                        {% endfor %}
+                    {% else %}
+                        <button class="btn btn-secondary btn-lg w-100" disabled>
+                            <i class="fas fa-times-circle me-2"></i>Agotado
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Return to Events List -->
+    <div class="mt-4">
+        <a href="{% url 'events' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Volver a Eventos
+        </a>
+    </div>
+</div>
+{% endblock %}

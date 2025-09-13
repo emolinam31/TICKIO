@@ -1,24 +1,70 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Carrito</title>
-</head>
-<body>
-    <h1>Carrito de compras</h1>
 
-    {% if items %}
-        <ul>
-            {% for item in items %}
-                <li>
-                    {{ item.ticket.name }} ({{ item.ticket.price }} c/u) x {{ item.quantity }}
-                    = {{ item.subtotal }}
-                    <a href="{% url 'orders:remove_from_cart' item.ticket.id %}">Eliminar</a>
-                </li>
-            {% endfor %}
-        </ul>
-        <h3>Total: {{ total }}</h3>
-    {% else %}
-        <p>Tu carrito está vacío.</p>
-    {% endif %}
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Carrito de compras - Tickio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Carrito de compras</h2>
+                </div>
+                <div class="card-body">
+                    {% if items %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th>Boleta</th>
+                                        <th>Precio</th>
+                                        <th>Cantidad</th>
+                                        <th>Subtotal</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in items %}
+                                        <tr>
+                                            <td>{{ item.ticket.name }}</td>
+                                            <td>${{ item.ticket.price }}</td>
+                                            <td>
+                                                <form method="post" action="{% url 'orders:update_cart' item.ticket.id %}" class="d-flex align-items-center">
+                                                    {% csrf_token %}
+                                                    <input type="number" name="quantity" min="1" max="{{ item.ticket.remaining }}" value="{{ item.quantity }}" class="form-control form-control-sm me-2" style="width: 70px;">
+                                                    <button type="submit" class="btn btn-outline-primary btn-sm">Actualizar</button>
+                                                </form>
+                                            </td>
+                                            <td>${{ item.subtotal }}</td>
+                                            <td>
+                                                <a href="{% url 'orders:remove_from_cart' item.ticket.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-end align-items-center mt-3">
+                            <h4 class="me-3">Total:</h4>
+                            <h4 class="text-success">${{ total }}</h4>
+                        </div>
+                        <div class="d-flex justify-content-end mt-4">
+                            <a href="{% url 'orders:checkout' %}" class="btn btn-success btn-lg">Finalizar compra</a>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info text-center" role="alert">
+                            Tu carrito está vacío.
+                        </div>
+                        <div class="d-flex justify-content-center mt-4">
+                            <a href="{% url 'events' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Volver a Eventos
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

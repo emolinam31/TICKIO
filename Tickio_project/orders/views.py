@@ -1,3 +1,20 @@
+def update_cart(request, ticket_type_id):
+    if request.method == "POST":
+        cart = request.session.get('cart', {})
+        ticket = get_object_or_404(TicketType, id=ticket_type_id, active=True)
+        try:
+            quantity = int(request.POST.get('quantity', 1))
+        except (TypeError, ValueError):
+            quantity = 1
+        if quantity < 1:
+            quantity = 1
+        if quantity > ticket.remaining:
+            quantity = ticket.remaining
+        item = cart.get(str(ticket.id), {"quantity": 0})
+        item["quantity"] = quantity
+        cart[str(ticket.id)] = item
+        request.session['cart'] = cart
+    return redirect('orders:cart_view')
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from events.models import TicketType
@@ -8,12 +25,17 @@ from .models import Order
 
 def add_to_cart(request, ticket_type_id):
     cart = request.session.get('cart', {})
-
     ticket = get_object_or_404(TicketType, id=ticket_type_id, active=True)
+
+    # Obtener la cantidad del formulario POST, por defecto 1
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+    except (TypeError, ValueError):
+        quantity = 1
 
     # usamos str(id) porque las claves de sesión deben ser serializables
     item = cart.get(str(ticket.id), {"quantity": 0})
-    item["quantity"] += 1
+    item["quantity"] += quantity
     cart[str(ticket.id)] = item
 
     request.session['cart'] = cart
@@ -66,6 +88,12 @@ def checkout_view(request):
     return render(request, "orders/checkout.html", {"cart": cart, "order": order, "error": error})
 
 
+
 def order_success(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     return render(request, "orders/order_success.html", {"order": order})
+
+
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, "orders/order_detail.html", {"order": order})
