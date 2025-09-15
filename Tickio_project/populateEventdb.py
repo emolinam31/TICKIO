@@ -9,6 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tickio.settings')
 django.setup()
 
 from events.models import CategoriaEvento, Evento
+from accounts.models import CustomUser
 
 def crear_categorias():
     categorias = [
@@ -188,9 +189,9 @@ def crear_eventos(categorias):
                 categoria=categoria,
                 fecha=fecha,
                 lugar=random.choice(lugares),
-                organizador=random.choice(organizadores),
                 cupos_disponibles=random.randint(100, 45000),
-                precio=Decimal(random.randint(50000, 850000))
+                precio=Decimal(random.randint(50000, 850000)),
+                estado='publicado'  # Aseguramos que los eventos de ejemplo estén publicados
             )
             eventos_creados += 1
             print(f"Evento creado: {evento.nombre} - {evento.categoria.nombre} - {evento.organizador}")

@@ -37,7 +37,7 @@ class CustomUserAdmin(UserAdmin):
 
 class AsistenteAdmin(admin.ModelAdmin):
     list_display = ('get_email', 'get_nombre')
-    search_fields = ('customuser__correo', 'customuser__nombre')
+    search_fields = ('customuser__email', 'customuser__nombre')
 
     def get_email(self, obj):
         return obj.customuser.email
@@ -52,7 +52,7 @@ class OrganizadorAdmin(admin.ModelAdmin):
     search_fields = ('empresa', 'customuser__email', 'customuser__nombre')
 
     def get_email(self, obj):
-        return obj.customuser.correo
+        return obj.customuser.email
     get_email.short_description = 'Correo'
 
     def get_nombre(self, obj):

@@ -7,7 +7,7 @@
     <!-- Breadcrumb navigation -->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'events' %}">Eventos</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'events:events' %}">Eventos</a></li>
             <li class="breadcrumb-item active">{{ evento.nombre }}</li>
         </ol>
     </nav>
@@ -73,7 +73,7 @@
 
     <!-- Return to Events List -->
     <div class="mt-4">
-        <a href="{% url 'events' %}" class="btn btn-outline-primary">
+        <a href="{% url 'events:events' %}" class="btn btn-outline-primary">
             <i class="fas fa-arrow-left me-2"></i>Volver a Eventos
         </a>
     </div>

@@ -21,7 +21,7 @@ def register(request):
             # lo manejamos en el método save() de CustomUser
             login(request, user)
             messages.success(request, '¡Registro exitoso!')
-            return redirect('home')
+            return redirect('events:home')
         else:
             messages.error(request, 'Por favor corrija los errores en el formulario.')
     else:
@@ -45,4 +45,4 @@ def profile(request):
 def logout_view(request):
     logout(request)
     messages.info(request, '¡Has cerrado sesión!')
-    return redirect('home')
+    return redirect('events:home')
