@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ evento.nombre }} - Tickio{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'events:events' %}">Eventos</a></li>
+            <li class="breadcrumb-item active">{{ evento.nombre }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Event Details Card -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <span class="badge bg-primary mb-2">{{ evento.categoria.nombre }}</span>
+                    <h1 class="card-title">{{ evento.nombre }}</h1>
+                    <div class="my-4">
+                        <p class="card-text">
+                            <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                            <strong>Lugar:</strong> {{ evento.lugar }}
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-calendar text-muted me-2"></i>
+                            <strong>Fecha:</strong> {{ evento.fecha }}
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-user text-muted me-2"></i>
+                            <strong>Organizador:</strong> {{ evento.organizador }}
+                        </p>
+                        <p class="card-text">
+                            <i class="fas fa-users text-muted me-2"></i>
+                            <strong>Cupos disponibles:</strong> 
+                            <span class="badge {% if evento.cupos_disponibles > 0 %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if evento.cupos_disponibles > 0 %}
+                                    {{ evento.cupos_disponibles }} cupos
+                                {% else %}
+                                    Agotado
+                                {% endif %}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservation Card -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title">Reservar Entrada</h4>
+                    <div class="mb-4">
+                        <h2 class="text-primary">${{ evento.precio }}</h2>
+                        <small class="text-muted">Precio por entrada</small>
+                    </div>
+                    {% if evento.cupos_disponibles > 0 %}
+                        <button class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-ticket-alt me-2"></i>Comprar Entrada
+                        </button>
+                    {% else %}
+                        <button class="btn btn-secondary btn-lg w-100" disabled>
+                            <i class="fas fa-times-circle me-2"></i>Agotado
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Return to Events List -->
+    <div class="mt-4">
+        <a href="{% url 'events:events' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Volver a Eventos
+        </a>
+    </div>
+</div>
+{% endblock %}
