@@ -2,8 +2,14 @@ from decimal import Decimal
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
+from django.contrib import messages
 from events.models import TicketType
 from .services import checkout as checkout_service
+from .models import Ticket
+from django.contrib.auth.decorators import login_required
+import qrcode
+import io
+import base64
 
 CART_SESSION_KEY = 'cart'
 
@@ -90,23 +96,28 @@ def _cart_total_quantity(cart: dict) -> int:
     return sum(int(v.get('quantity', 0)) for v in cart.values())
 
 
+@login_required
 def checkout_view(request: HttpRequest) -> HttpResponse:
     cart = request.session.get(CART_SESSION_KEY, {})
+    if not cart:
+        messages.error(request, "Tu carrito está vacío.")
+        return redirect('orders:cart_view')
+
     if request.method == 'POST':
         try:
-            order = checkout_service(cart, user=request.user if request.user.is_authenticated else None)
-        except Exception as exc:
-            return render(request, 'orders/checkout.html', {
-                'error': str(exc),
-                'cart': cart,
-            })
-        # limpiar carrito
+            order = checkout_service(cart, user=request.user)
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            return redirect('orders:checkout')
+
+        # Limpiar carrito y mostrar mensaje
         request.session[CART_SESSION_KEY] = {}
         request.session.modified = True
-        return render(request, 'orders/checkout.html', {
-            'order': order,
-            'success': True,
-        })
+        
+        messages.success(request, "¡Tu compra se ha realizado con éxito! Ya puedes ver tus tickets en 'Mis Órdenes'.")
+        return redirect('accounts:my_orders')
+
+    # Para GET request, simplemente mostrar la página de checkout
     return render(request, 'orders/checkout.html', {
         'cart': cart,
     })
@@ -140,7 +151,25 @@ def update_quantity(request: HttpRequest) -> HttpResponse:
 
 
 def _redirect_with_message(request: HttpRequest, to: str, success: bool, message: str) -> HttpResponse:
-    from django.contrib import messages
     (messages.success if success else messages.error)(request, message)
     return redirect(to)
+
+@login_required
+def ticket_detail_view(request, ticket_code):
+    ticket = get_object_or_404(Ticket, unique_code=ticket_code, user=request.user)
+    
+    # Generate QR Code
+    qr_data = request.build_absolute_uri(request.path) # Example data, can be a validation URL
+    qr_img = qrcode.make(qr_data)
+    
+    buffer = io.BytesIO()
+    qr_img.save(buffer, format='PNG')
+    qr_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+    context = {
+        'ticket': ticket,
+        'qr_code': qr_base64,
+    }
+    return render(request, 'orders/ticket_detail.html', context)
+
 

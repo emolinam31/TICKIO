@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from events.models import Evento, TicketType
+import uuid
 
 
 class Order(models.Model):
@@ -26,4 +27,17 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.name}"
+
+
+class Ticket(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='tickets')
+    ticket_type = models.ForeignKey(TicketType, on_delete=models.PROTECT)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    event = models.ForeignKey(Evento, on_delete=models.PROTECT)
+    unique_code = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Ticket for {self.event.nombre} - {self.ticket_type.name}'
 

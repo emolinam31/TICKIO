@@ -2,7 +2,7 @@ from decimal import Decimal
 from typing import Dict, Tuple
 from django.db import transaction
 from django.db.models import F
-from .models import Order, OrderItem
+from .models import Order, OrderItem, Ticket
 from events.models import TicketType
 
 class PaymentGateway:
@@ -13,13 +13,17 @@ def checkout(cart: Dict[str, dict], user=None, gateway: PaymentGateway | None = 
     if not cart:
         raise ValueError("El carrito está vacío")
 
+    if not user:
+        raise ValueError("Es necesario iniciar sesión para comprar")
+
     from payments.adapters.dummy import DummyGateway
     gateway = gateway or DummyGateway()
 
     with transaction.atomic():
         order = Order.objects.create(user=user)
         total = Decimal('0.00')
-
+        
+        order_items = []
         for key, data in cart.items():
             ticket_type = (
                 TicketType.objects.select_for_update()
@@ -36,7 +40,7 @@ def checkout(cart: Dict[str, dict], user=None, gateway: PaymentGateway | None = 
             line_total = ticket_type.price * quantity
             total += line_total
 
-            OrderItem.objects.create(
+            order_items.append(OrderItem(
                 order=order,
                 event=ticket_type.event,
                 ticket_type=ticket_type,
@@ -44,7 +48,9 @@ def checkout(cart: Dict[str, dict], user=None, gateway: PaymentGateway | None = 
                 unit_price=ticket_type.price,
                 quantity=quantity,
                 line_total=line_total,
-            )
+            ))
+        
+        OrderItem.objects.bulk_create(order_items)
 
         ok, reference = gateway.charge(total, metadata={"order_id": order.id})
         if not ok:
@@ -53,6 +59,20 @@ def checkout(cart: Dict[str, dict], user=None, gateway: PaymentGateway | None = 
         order.total_amount = total
         order.status = 'paid'
         order.save()
+
+        # Create tickets for the user
+        tickets_to_create = []
+        for item in order.items.all():
+            for _ in range(item.quantity):
+                tickets_to_create.append(
+                    Ticket(
+                        order=order,
+                        ticket_type=item.ticket_type,
+                        user=user,
+                        event=item.event
+                    )
+                )
+        Ticket.objects.bulk_create(tickets_to_create)
 
     return order
 

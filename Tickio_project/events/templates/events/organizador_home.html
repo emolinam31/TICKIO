@@ -1,100 +1,87 @@
 {% extends 'base.html' %}
 
+{% block title %}Panel de Organizador - Tickio{% endblock %}
+
 {% block content %}
 <div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Panel de Organizador</h1>
+        <a href="{% url 'events:crear_evento' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Crear Nuevo Evento
+        </a>
+    </div>
+
+    <!-- Dashboard Stats -->
     <div class="row mb-4">
-        <div class="col-md-8">
-            <h1>Panel de Organizador</h1>
-        </div>
-        <div class="col-md-4 text-end">
-            <a href="{% url 'events:crear_evento' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Crear Nuevo Evento
-            </a>
-        </div>
-    </div>
-
-    {% if messages %}
-    <div class="messages mb-4">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card bg-primary text-white">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-success shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Total de Eventos</h5>
-                    <p class="card-text display-4">{{ eventos|length }}</p>
+                    <h5 class="card-title">Total Vendido</h5>
+                    <p class="card-text display-4">${{ total_vendido|floatformat:2 }}</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
-            <div class="card">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-info shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Acciones Rápidas</h5>
-                    <div class="d-flex gap-2">
-                        <a href="{% url 'events:mis_eventos' %}" class="btn btn-outline-primary">
-                            <i class="fas fa-list"></i> Ver Todos Mis Eventos
-                        </a>
-                        <a href="{% url 'events:crear_evento' %}" class="btn btn-outline-success">
-                            <i class="fas fa-plus"></i> Publicar Nuevo Evento
-                        </a>
-                    </div>
+                    <h5 class="card-title">Boletos Vendidos</h5>
+                    <p class="card-text display-4">{{ boletos_vendidos }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-dark bg-light shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">% Ocupación</h5>
+                    <p class="card-text display-4">{{ porcentaje_ocupacion }}%</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card text-white bg-primary shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Eventos Activos</h5>
+                    <p class="card-text display-4">{{ eventos_activos }}</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <h2 class="mb-4">Mis Últimos Eventos</h2>
-    {% if eventos %}
-    <div class="row">
-        {% for evento in eventos %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <h5 class="card-title">{{ evento.nombre }}</h5>
-                        <span class="badge {% if evento.estado == 'publicado' %}bg-success{% elif evento.estado == 'pausado' %}bg-warning{% else %}bg-secondary{% endif %}">
-                            {{ evento.get_estado_display }}
-                        </span>
-                    </div>
-                    <p class="card-text text-muted">
-                        <i class="fas fa-calendar"></i> {{ evento.fecha }}
-                    </p>
-                    <p class="card-text">
-                        <i class="fas fa-map-marker-alt"></i> {{ evento.lugar }}
-                    </p>
-                    <p class="card-text">
-                        <i class="fas fa-users"></i> {{ evento.cupos_disponibles }} cupos
-                    </p>
-                </div>
-                <div class="card-footer bg-transparent">
-                    <div class="btn-group w-100">
-                        <a href="{% url 'events:editar_evento' evento.pk %}" class="btn btn-outline-primary btn-sm w-100">
-                            <i class="fas fa-edit"></i> Editar
+    <div class.row>
+        <div class="col-12">
+            <h2 class="mb-4">Eventos Recientes</h2>
+            {% if eventos_recientes %}
+                <div class="list-group">
+                    {% for evento in eventos_recientes %}
+                        <a href="{% url 'events:event_detail' evento.pk %}" class="list-group-item list-group-item-action flex-column align-items-start mb-2 shadow-sm">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ evento.nombre }}</h5>
+                                <small>{{ evento.fecha|date:"d M, Y" }}</small>
+                            </div>
+                            <p class="mb-1 text-muted">{{ evento.ubicacion }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small>Estado: <span class="badge {% if evento.estado == 'publicado' %}bg-success{% elif evento.estado == 'pausado' %}bg-warning{% else %}bg-secondary{% endif %}">{{ evento.get_estado_display }}</span></small>
+                                <a href="{% url 'events:editar_evento' evento.pk %}" class="btn btn-outline-primary btn-sm">Editar</a>
+                            </div>
                         </a>
-                    </div>
+                    {% endfor %}
                 </div>
-            </div>
+                 <div class="text-center mt-3">
+                    <a href="{% url 'events:mis_eventos' %}" class="btn btn-secondary">Ver todos mis eventos</a>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <h4 class="alert-heading">¡Bienvenido a Tickio!</h4>
+                    <p>Aún no has creado ningún evento. ¡Comienza ahora!</p>
+                    <hr>
+                    <p class="mb-0">
+                        <a href="{% url 'events:crear_evento' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Crear mi primer evento
+                        </a>
+                    </p>
+                </div>
+            {% endif %}
         </div>
-        {% endfor %}
     </div>
-    {% else %}
-    <div class="alert alert-info">
-        <h4 class="alert-heading">¡Bienvenido a Tickio!</h4>
-        <p>Aún no has creado ningún evento. ¡Comienza ahora!</p>
-        <hr>
-        <p class="mb-0">
-            <a href="{% url 'events:crear_evento' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Crear mi primer evento
-            </a>
-        </p>
-    </div>
-    {% endif %}
 </div>
 {% endblock %}

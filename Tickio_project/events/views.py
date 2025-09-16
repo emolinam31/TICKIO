@@ -3,9 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic import TemplateView, ListView, DetailView
 from django.core.exceptions import PermissionDenied
+from django.db.models import Sum, Count, F
 from .models import Evento, CategoriaEvento
 from .forms import EventoForm, TicketTypeFormSet
 from .decorators import organizador_required
+from orders.models import Ticket
 
 class HomeView(TemplateView):
     def get_template_names(self):
@@ -16,7 +18,24 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated and self.request.user.tipo == 'organizador':
-            context['eventos'] = Evento.objects.filter(organizador=self.request.user).order_by('-fecha_creacion')[:6]
+            organizador = self.request.user
+            eventos = Evento.objects.filter(organizador=organizador)
+            context['eventos_recientes'] = eventos.order_by('-fecha_creacion')[:5]
+
+            # Dashboard Stats
+            tickets_vendidos = Ticket.objects.filter(event__organizador=organizador)
+            
+            total_vendido = tickets_vendidos.aggregate(total=Sum('ticket_type__price'))['total'] or 0
+            boletos_vendidos = tickets_vendidos.count()
+
+            capacidad_total = eventos.aggregate(total=Sum('ticket_types__capacity'))['total'] or 0
+            porcentaje_ocupacion = (boletos_vendidos / capacidad_total * 100) if capacidad_total > 0 else 0
+
+            context['total_vendido'] = total_vendido
+            context['boletos_vendidos'] = boletos_vendidos
+            context['porcentaje_ocupacion'] = round(porcentaje_ocupacion, 2)
+            context['eventos_activos'] = eventos.filter(estado='publicado').count()
+
         return context
 
 class EventListView(ListView):

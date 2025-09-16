@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser
+from orders.models import Order
 
 # Vista simple de login
 class CustomLoginView(LoginView):
@@ -46,3 +47,11 @@ def logout_view(request):
     logout(request)
     messages.info(request, '¡Has cerrado sesión!')
     return redirect('events:home')
+
+@login_required
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user).prefetch_related('tickets').order_by('-created_at')
+    context = {
+        'orders': orders
+    }
+    return render(request, 'orders/my_orders.html', context)
