@@ -15,7 +15,7 @@
                         <div class="col-md-7">
                             <h4 class="card-subtitle mb-3 text-muted">{{ ticket.ticket_type.name }}</h4>
                             <p><strong>Titular:</strong> {{ ticket.user.get_full_name|default:ticket.user.username }}</p>
-                            <p><strong>Fecha del evento:</strong> {{ ticket.event.fecha|date:"d/m/Y H:i" }}</p>
+                            <p><strong>Fecha del evento:</strong> {{ ticket.event.fecha|date:"d/m/Y" }}</p>
                             <p><strong>Ubicación:</strong> {{ ticket.event.ubicacion }}</p>
                             <p><strong>Orden de Compra:</strong> #{{ ticket.order.id }}</p>
                             <p><strong>Código de Ticket:</strong></p>
@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="text-center mt-4">
-                <a href="{% url 'my_orders' %}" class="btn btn-secondary">Volver a Mis Órdenes</a>
+                <a href="{% url 'accounts:my_orders' %}" class="btn btn-secondary">Volver a Mis Órdenes</a>
             </div>
         </div>
     </div>
