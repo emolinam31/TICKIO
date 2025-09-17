@@ -2,8 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic import TemplateView, ListView, DetailView
-from django.core.exceptions import PermissionDenied
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, F
 from .models import Evento, CategoriaEvento
 from .forms import EventoForm, TicketTypeFormSet
 from .decorators import organizador_required
@@ -47,7 +46,6 @@ class EventListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        # Solo mostrar eventos publicados para el público general
         if not self.request.user.is_authenticated or self.request.user.tipo != 'organizador':
             queryset = queryset.filter(estado='publicado')
         
@@ -82,7 +80,6 @@ class EventDetailView(DetailView):
 
     def get_queryset(self):
         qs = super().get_queryset().select_related('categoria', 'organizador').prefetch_related('ticket_types')
-        # Solo permitir ver eventos publicados a no organizadores
         if not self.request.user.is_authenticated or self.request.user.tipo != 'organizador':
             qs = qs.filter(estado='publicado')
         return qs

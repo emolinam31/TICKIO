@@ -6,5 +6,3 @@ class DummyGateway:
         if amount < 0:
             return False, "invalid-amount"
         return True, "dummy-ref"
-
-
