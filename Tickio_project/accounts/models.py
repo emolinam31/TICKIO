@@ -45,41 +45,17 @@ class CustomUser(AbstractUser):
     def save(self, *args, **kwargs):
         is_new = self.pk is None
         super().save(*args, **kwargs)
-        
+
         if is_new:
-            if self.tipo == 'asistente':
-                Asistente.objects.create(user=self)
-            elif self.tipo == 'organizador':
-                Organizador.objects.create(user=self, empresa='')
-                Asistente.objects.create(user=self)
-            elif self.tipo == 'organizador':
-                Organizador.objects.create(user=self)
-
-    def get_profile(self):
-        if self.tipo == 'asistente':
-            return self.perfil_asistente
-        return self.perfil_organizador
-
-    class Meta:
-        verbose_name = 'Usuario'
-        verbose_name_plural = 'Usuarios'
-
-    def save(self, *args, **kwargs):
-        # Crear el perfil correspondiente si no existe
-        is_new = self.pk is None
-        super().save(*args, **kwargs)
-
-        if is_new:  # Si es una nueva instancia
             if self.tipo == 'asistente' and not hasattr(self, 'perfil_asistente'):
                 Asistente.objects.create(user=self)
             elif self.tipo == 'organizador' and not hasattr(self, 'perfil_organizador'):
                 Organizador.objects.create(user=self, empresa='')
 
     def get_profile(self):
-        """Retorna el perfil específico (Asistente u Organizador) del usuario"""
         if self.tipo == 'asistente':
-            return self.asistente
-        return self.organizador
+            return self.perfil_asistente
+        return self.perfil_organizador
 
     class Meta:
         verbose_name = 'Usuario'

@@ -9,7 +9,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tickio.settings')
 django.setup()
 
 from events.models import CategoriaEvento, Evento
-from accounts.models import CustomUser
 
 def crear_categorias():
     categorias = [
